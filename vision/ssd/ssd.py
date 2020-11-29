@@ -98,7 +98,7 @@ class SSD(nn.Module):
             boxes = box_utils.center_form_to_corner_form(boxes)
             return confidences, boxes
         else:
-            return confidences, locations
+            return torch.cat((confidences, locations), dim=-1)
 
     def compute_header(self, i, x):
         confidence = self.classification_headers[i](x)

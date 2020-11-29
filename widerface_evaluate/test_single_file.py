@@ -49,25 +49,14 @@ else:
 net.load(model_path)
 
 counter = 0
-for parent, dir_names, file_names in os.walk(val_image_root):
-    for file_name in file_names:
-        if not file_name.lower().endswith('jpg'):
-            continue
-        im = cv2.imread(os.path.join(parent, file_name), cv2.IMREAD_COLOR)
-        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-        boxes, labels, probs = predictor.predict(im, candidate_size / 2, threshold)
+file_path = '/home/bhahn221/Work/protopia/face-detection/Ultra-Light-Fast-Generic-Face-Detector-1MB/data/wider_face_add_lm_10_10/JPEGImages/0--Parade_0_Parade_marchingband_1_465.jpg'
+im = cv2.imread(file_path, cv2.IMREAD_COLOR)
+im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+print(im.shape)
+boxes, labels, probs = predictor.predict(im, candidate_size / 2, threshold)
 
-        event_name = parent.split('/')[-1]
-        if not os.path.exists(os.path.join(val_result_txt_save_root, event_name)):
-            os.makedirs(os.path.join(val_result_txt_save_root, event_name))
-        fout = open(os.path.join(val_result_txt_save_root, event_name, file_name.split('.')[0] + '.txt'), 'w')
-        fout.write(file_name.split('.')[0] + '\n')
-        fout.write(str(boxes.size(0)) + '\n')
-        for i in range(boxes.size(0)):
-            bbox = boxes[i, :]
-            fout.write('%d %d %d %d %.03f' % (math.floor(bbox[0]), math.floor(bbox[1]), math.ceil(bbox[2] - bbox[0]), math.ceil(bbox[3] - bbox[1]), probs[i] if probs[i] <= 1 else 1) + '\n')
-        fout.close()
-        counter += 1
-        print('[%d] %s is processed.' % (counter, file_name))
+for i in range(boxes.size(0)):
+    bbox = boxes[i, :]
+    print('%d %d %d %d %.03f' % (math.floor(bbox[0]), math.floor(bbox[1]), math.ceil(bbox[2] - bbox[0]), math.ceil(bbox[3] - bbox[1]), probs[i] if probs[i] <= 1 else 1))
 
 # note: with score_threshold = 0.11 and hard_nms, MAP of 320-input model on widerface val set is: 0.785/0.695/0.431

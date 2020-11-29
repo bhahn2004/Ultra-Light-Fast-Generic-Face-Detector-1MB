@@ -11,7 +11,7 @@ import pickle
 import argparse
 import numpy as np
 from scipy.io import loadmat
-from bbox import bbox_overlaps
+from cython_bbox import bbox_overlaps
 
 
 def get_gt_boxes(gt_dir):
@@ -114,6 +114,7 @@ def get_preds(pred_dir):
             imgname, _boxes = read_pred_file(os.path.join(event_dir, imgtxt))
             current_event[imgname.rstrip('.jpg')] = _boxes
         boxes[event] = current_event
+    print(boxes)
     return boxes
 
 
@@ -283,7 +284,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--pred', default="./widerface_txt/")
+    parser.add_argument('-p', '--pred', default="./widerface_evaluation/")
     parser.add_argument('-g', '--gt', default='./ground_truth/')
 
     args = parser.parse_args()

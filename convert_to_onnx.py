@@ -26,7 +26,7 @@ if net_type == 'slim':
 elif net_type == 'RFB':
     model_path = "models/pretrained/version-RFB-320.pth"
     # model_path = "models/pretrained/version-RFB-640.pth"
-    net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True)
+    net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=False)
 
 else:
     print("unsupport network type.")
@@ -36,8 +36,10 @@ net.eval()
 net.to("cuda")
 
 model_name = model_path.split("/")[-1].split(".")[0]
-model_path = f"models/onnx/{model_name}.onnx"
+model_path = f"models/onnx/base-model-new-320.onnx"
 
 dummy_input = torch.randn(1, 3, 240, 320).to("cuda")
 # dummy_input = torch.randn(1, 3, 480, 640).to("cuda") #if input size is 640*480
-torch.onnx.export(net, dummy_input, model_path, verbose=False, input_names=['input'], output_names=['scores', 'boxes'])
+# NOTE change to a single output
+#torch.onnx.export(net, dummy_input, model_path, verbose=False, input_names=['input'], output_names=['scores', 'boxes'])
+torch.onnx.export(net, dummy_input, model_path, verbose=False, input_names=['input'], output_names=['output'])
